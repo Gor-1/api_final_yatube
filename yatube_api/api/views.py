@@ -21,8 +21,10 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-def get_post(self):
-    return get_object_or_404(Post, pk=self.kwargs.get('post_id'))
+class GetPostId:
+
+    def get_post(self):
+        return get_object_or_404(Post, pk=self.kwargs.get('post_id'))
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -30,11 +32,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def get_queryset(self):
-        post = get_post(self)
+        post = GetPostId.get_post(self)
         return post.comments.all()
 
     def perform_create(self, serializer):
-        post = get_post(self)
+        post = GetPostId.get_post(self)
         serializer.save(author=self.request.user, post=post)
 
 
@@ -55,7 +57,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     search_fields = ['user__username', 'following__username']
 
     def get_queryset(self):
-        user = get_object_or_404(User, username=self.request.user.username)
+        user = get_object_or_404(User, username=self.request.user)
         return user.follower
 
     def perform_create(self, serializer):
